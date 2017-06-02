@@ -1,6 +1,9 @@
 package nl.s63b.europeanintegration;
 
+import com.S63B.domain.Entities.Car;
 import com.google.common.base.Predicates;
+import nl.s63b.europeanintegration.jms.ApplicationGateway;
+import nl.s63b.europeanintegration.jms.Countries;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
