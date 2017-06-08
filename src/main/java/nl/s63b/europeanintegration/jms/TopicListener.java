@@ -10,7 +10,7 @@ public interface TopicListener {
     void handleReceivedCar(Car car);
     void handleReceivedInvoice(Invoice invoice);
     // This gets called when other countries report a car for stolen
-    void handleStolenCarAnnouncement(Car car);
+    void handleReceivedStolenCarAnnouncement(Car car);
     // This gets called when a car reported for stolen is present in a different car
-    void handleStolenCarNotification(Car car);
+    void handleReceivedStolenCarNotification(Car car);
 }

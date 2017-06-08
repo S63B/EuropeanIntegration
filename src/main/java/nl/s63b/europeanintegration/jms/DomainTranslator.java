@@ -4,7 +4,7 @@ import com.S63B.domain.Entities.Car;
 import com.S63B.domain.Entities.Invoice;
 import com.S63B.domain.Entities.LicensePlate;
 import com.S63B.domain.Entities.Tracker;
-import nl.s63b.europeanintegration.jms.kotlin.Countries;
+import com.gmail.guushamm.EuropeanIntegration.StolenCar;
 import org.joda.time.DateTime;
 
 import java.time.Instant;
@@ -26,7 +26,24 @@ public class DomainTranslator {
         return instance;
     }
 
-    public static Car jmsToCar(nl.s63b.europeanintegration.jms.kotlin.Car car) {
+    public static Car jmsToCar(com.gmail.guushamm.EuropeanIntegration.Car car) {
+        Car newCar = new Car();
+
+        //Plate
+        LicensePlate plate = new LicensePlate();
+        plate.setLicense(car.getLicensePlate());
+        newCar.setLicensePlate(plate);
+        //Tracker
+        Tracker tracker = new Tracker("", car.getOriginCountry().name());
+        newCar.setTracker(tracker);
+        tracker.setCar(newCar);
+        //Status
+        newCar.setStolen(car.getStolen());
+
+        return newCar;
+    }
+
+    public static Car jmsToCar(StolenCar car){
         Car newCar = new Car();
 
         //Plate
@@ -38,15 +55,15 @@ public class DomainTranslator {
         newCar.setTracker(tracker);
         tracker.setCar(newCar);
         //Status
-        newCar.setStolen(car.getStolen());
+        newCar.setStolen(true);
 
         return newCar;
     }
 
-    public static nl.s63b.europeanintegration.jms.kotlin.Car carToJms(Car car, nl.s63b.europeanintegration.jms.Countries destinationCountry) {
-        Countries destination = Countries.NETHERLANDS;
+    public static StolenCar carToStolenCar(Car car, Countries destinationCountry){
+        com.gmail.guushamm.EuropeanIntegration.Countries destination = com.gmail.guushamm.EuropeanIntegration.Countries.NETHERLANDS;
 
-        for (Countries c : Countries.values()) {
+        for (com.gmail.guushamm.EuropeanIntegration.Countries c : com.gmail.guushamm.EuropeanIntegration.Countries.values()) {
             if (destinationCountry.equals(c)) {
                 destination = c;
             }
@@ -56,16 +73,38 @@ public class DomainTranslator {
             car.setLicensePlate(new LicensePlate("NL-NO-PLATE", null));
         }
 
-        nl.s63b.europeanintegration.jms.kotlin.Car newCar = new nl.s63b.europeanintegration.jms.kotlin.Car(
+        StolenCar stolenCar = new StolenCar(
                 car.getLicensePlate().getLicense(),
                 destination,
+                true
+        );
+        return stolenCar;
+    }
+
+    public static com.gmail.guushamm.EuropeanIntegration.Car carToJms(Car car, Countries destinationCountry) {
+        com.gmail.guushamm.EuropeanIntegration.Countries destination = com.gmail.guushamm.EuropeanIntegration.Countries.NETHERLANDS;
+
+        for (com.gmail.guushamm.EuropeanIntegration.Countries c : com.gmail.guushamm.EuropeanIntegration.Countries.values()) {
+            if (destinationCountry.equals(c)) {
+                destination = c;
+            }
+        }
+
+        if(car.getLicensePlate() == null){
+            car.setLicensePlate(new LicensePlate("NL-NO-PLATE", null));
+        }
+
+        com.gmail.guushamm.EuropeanIntegration.Car newCar = new com.gmail.guushamm.EuropeanIntegration.Car(
+                car.getLicensePlate().getLicense(),
+                destination,
+                com.gmail.guushamm.EuropeanIntegration.Countries.NETHERLANDS,
                 car.isStolen()
         );
         return newCar;
     }
 
     //todo Ophalen van de user die in het buitenland gereden heeft om zo zijn invoice te koppelen en de juiste auto te selecteren
-    public static Invoice jmsToInvoice(nl.s63b.europeanintegration.jms.kotlin.Invoice invoice){
+    public static Invoice jmsToInvoice(com.gmail.guushamm.EuropeanIntegration.Invoice invoice){
         Invoice newInvoice = new Invoice();
 
         newInvoice.setTotalPrice(invoice.getPrice());
@@ -77,21 +116,21 @@ public class DomainTranslator {
         return newInvoice;
     }
 
-    public static nl.s63b.europeanintegration.jms.kotlin.Invoice invoiceToJms(Invoice invoice, nl.s63b.europeanintegration.jms.Countries destinationCountry){
-        Countries destination = Countries.NETHERLANDS;
+    public static com.gmail.guushamm.EuropeanIntegration.Invoice invoiceToJms(Invoice invoice, Countries destinationCountry){
+        com.gmail.guushamm.EuropeanIntegration.Countries destination = com.gmail.guushamm.EuropeanIntegration.Countries.NETHERLANDS;
 
-        for (Countries c : Countries.values()) {
+        for (com.gmail.guushamm.EuropeanIntegration.Countries c : com.gmail.guushamm.EuropeanIntegration.Countries.values()) {
             if (destinationCountry.equals(c)) {
                 destination = c;
             }
         }
 
-        nl.s63b.europeanintegration.jms.kotlin.Invoice newInvoice = new nl.s63b.europeanintegration.jms.kotlin.Invoice(
+        com.gmail.guushamm.EuropeanIntegration.Invoice newInvoice = new com.gmail.guushamm.EuropeanIntegration.Invoice(
                 0,
                 invoice.getTotalPrice(),
                 invoice.getOwner().getOwnedCars().get(0).getCar().getLicensePlate().getLicense(),
                 destination,
-                Countries.NETHERLANDS,
+                com.gmail.guushamm.EuropeanIntegration.Countries.NETHERLANDS,
                 Date.from(Instant.now())
         );
         return newInvoice;
