@@ -78,12 +78,18 @@ public class EUApplication implements TopicListener {
      * @return list of all the invoices created and sent.
      */
     public List<Invoice> sendAllInvoices() {
+        System.out.println("Foreign cars count: "+foreignCars.size());
         List<Car> nonActiveForeignCars = europeanIntegrationService.getAllNonActiveForeignCars(foreignCars);
-        List<Invoice> createdInvoices = europeanIntegrationService.getAllCarInvoices(nonActiveForeignCars);
+        System.out.println("non active cars count" + nonActiveForeignCars.size());
+        List<Invoice> createdInvoices = new ArrayList<>();
 
-        for (Car nonactive : nonActiveForeignCars) {
-            if (foreignCars.contains(nonactive)) {
-                foreignCars.remove(nonactive);
+        for (Car car : nonActiveForeignCars) {
+            if (foreignCars.contains(car)) {
+                Invoice carInvoice = europeanIntegrationService.getCarInvoice(car);
+                sendInvoiceAbroad(carInvoice, getCountryByString(car.getTracker().getCountry()));
+                createdInvoices.add(carInvoice);
+                foreignCars.remove(car);
+                System.out.println("car invoice made for: "+ car.getLicensePlate().getLicense());
             }
         }
         return createdInvoices;
@@ -122,9 +128,11 @@ public class EUApplication implements TopicListener {
     public void handleReceivedCar(Car car) {
         if (foreignCars.size() < 50) {
             europeanIntegrationService.addReceivedDrivingCar(car);
+
             if (car.isStolen()) {
                 notifyCountryOfDrivingStolenCar(car);
             }
+
             foreignCars.add(car);
             System.out.println("Received a car from: " + car.getTracker().getCountry() + " PLATE: " + car.getLicensePlate().getLicense() + "Foreigncar count:" + foreignCars.size());
         } else {
@@ -139,11 +147,28 @@ public class EUApplication implements TopicListener {
 
     @Override
     public void handleReceivedStolenCarAnnouncement(Car car) {
+        System.out.println("Received a stolen car announcement from: "+ car.getTracker().getCountry());
         carService.reportCarStolen(car);
     }
 
     @Override
     public void handleReceivedStolenCarNotification(Car car) {
+        System.out.println("Received a stolen car notification about:" + car.getLicensePlate().getLicense());
+    }
 
+    /**
+     * Gets a country enum value by string.
+     * @param countryName of the country
+     * @return Country of string. If the string is not valid it will return Netherlands.
+     */
+    private Countries getCountryByString(String countryName){
+        Countries country;
+        try{
+            country = Countries.valueOf(countryName);
+        }
+        catch (Exception e){
+            country = Countries.NETHERLANDS;
+        }
+        return country;
     }
 }

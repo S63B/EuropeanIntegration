@@ -37,14 +37,8 @@ public class EuropeanIntegrationService {
         simulationService.addCarToSimulation(car);
     }
 
-    public List<Invoice> getAllCarInvoices(List<Car> foreignCars) {
-        List<Invoice> invoices = new ArrayList<>();
-
-        for(Car car: foreignCars){
-            this.invoiceService.getInvoiceForeignCar(car);
-        }
-
-        return invoices;
+    public Invoice getCarInvoice(Car foreignCar) {
+         return invoiceService.getInvoiceForeignCar(foreignCar);
     }
 
     public List<Car> getAllNonActiveForeignCars(List<Car> foreignCars) {
