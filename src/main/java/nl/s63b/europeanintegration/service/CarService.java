@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * Created by Kevin.
@@ -51,5 +52,11 @@ public class CarService {
     public void reportCarStolen(Car car) {
         car.setStolen(true);
         saveCar(car);
+    }
+
+
+
+    public boolean licensePlateExists(String licensePlate) {
+        return licensePlateDao.existsByLicense(licensePlate);
     }
 }

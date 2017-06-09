@@ -25,7 +25,7 @@ public class EuropeanIntegrationRest {
         this.applicationGateway = applicationGateway;
     }
 
-    @RequestMapping(value = "/car/{id}/{country}", method = RequestMethod.GET)
+    @RequestMapping(value = "/car/{id}/{country}", method = RequestMethod.POST)
     public ResponseEntity<Car> sendCarAbroad(@PathVariable("id") int carId, @PathVariable("country") String destination) {
 
         Car sendCar = applicationGateway.sendCarAbroad(carId, destination);
@@ -34,7 +34,7 @@ public class EuropeanIntegrationRest {
         return new ResponseEntity<>(sendCar, status);
     }
 
-    @RequestMapping(value = "/car/{id}/stolen", method = RequestMethod.GET)
+    @RequestMapping(value = "/car/{id}/stolen", method = RequestMethod.POST)
     public ResponseEntity<Car> reportCarStolen(@PathVariable("id") int carId) {
         Car reportCar = applicationGateway.reportCarAsStolen(carId);
 

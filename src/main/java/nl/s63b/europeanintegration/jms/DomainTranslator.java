@@ -5,7 +5,9 @@ import com.S63B.domain.Entities.Invoice;
 import com.S63B.domain.Entities.LicensePlate;
 import com.S63B.domain.Entities.Tracker;
 import com.gmail.guushamm.EuropeanIntegration.StolenCar;
+import nl.s63b.europeanintegration.service.CarService;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;
 import java.util.Date;
@@ -15,9 +17,8 @@ import java.util.Date;
  */
 public class DomainTranslator {
     private static DomainTranslator instance;
+    private CarService carService;
 
-    private DomainTranslator() {
-    }
 
     public static DomainTranslator getInstance() {
         if (instance == null) {

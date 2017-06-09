@@ -98,14 +98,14 @@ public class TopicGateway {
     }
 
     private void handleReceivedInvoice(Invoice invoice) {
-        System.out.println("JMS:Received invoice from" + invoice.getOriginCountry());
+        System.out.println("JMS:Received invoice from: " + invoice.getOriginCountry());
         for (TopicListener listener : listeners) {
             listener.handleReceivedInvoice(DomainTranslator.jmsToInvoice(invoice));
         }
     }
 
     private void handlerReceivedCar(Car car) {
-        System.out.println("JMS:Received car from" + car.getOriginCountry());
+        System.out.println("JMS Received car from: " + car.getOriginCountry());
         for (TopicListener listener : listeners) {
             listener.handleReceivedCar(DomainTranslator.jmsToCar(car));
         }
@@ -113,7 +113,7 @@ public class TopicGateway {
 
     //todo when JMS is complete
     private void handleReceivedStolencar(StolenCar stolenCar) {
-        System.out.println("JMS:Received stolen car from" + stolenCar.getCountryOfOrigin());
+        System.out.println("JMS:Received stolen car from: " + stolenCar.getCountryOfOrigin());
 
         for (TopicListener listener : listeners) {
             listener.handleReceivedStolenCarNotification(DomainTranslator.jmsToCar(stolenCar));

@@ -8,4 +8,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface LicensePlateDao extends CrudRepository<LicensePlate, Integer> {
     LicensePlate findByLicense(String license);
+    boolean existsByLicense(String license);
 }
