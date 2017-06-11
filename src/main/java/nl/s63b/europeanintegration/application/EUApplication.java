@@ -2,14 +2,16 @@ package nl.s63b.europeanintegration.application;
 
 import com.S63B.domain.Entities.Car;
 import com.S63B.domain.Entities.Invoice;
+import com.S63B.domain.Entities.Owner;
 import nl.s63b.europeanintegration.jms.Countries;
 import nl.s63b.europeanintegration.jms.TopicGateway;
 import nl.s63b.europeanintegration.jms.TopicListener;
 import nl.s63b.europeanintegration.service.CarService;
 import nl.s63b.europeanintegration.service.EuropeanIntegrationService;
+import nl.s63b.europeanintegration.service.InvoiceService;
+import nl.s63b.europeanintegration.service.OwnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +23,16 @@ import java.util.List;
 public class EUApplication implements TopicListener {
     private EuropeanIntegrationService europeanIntegrationService;
     private CarService carService;
+    private OwnerService ownerService;
+    private InvoiceService invoiceService;
     private List<Car> foreignCars;
 
     @Autowired
-    public EUApplication(CarService carService, EuropeanIntegrationService europeanIntegrationService) {
+    public EUApplication(CarService carService, EuropeanIntegrationService europeanIntegrationService, OwnerService ownerService, InvoiceService invoiceService) {
         this.europeanIntegrationService = europeanIntegrationService;
         this.carService = carService;
+        this.ownerService = ownerService;
+        this.invoiceService = invoiceService;
     }
 
     /**
@@ -78,18 +84,22 @@ public class EUApplication implements TopicListener {
      * @return list of all the invoices created and sent.
      */
     public List<Invoice> sendAllInvoices() {
-        System.out.println("Foreign cars count: "+foreignCars.size());
+        System.out.println("Foreign cars count: " + foreignCars.size());
         List<Car> nonActiveForeignCars = europeanIntegrationService.getAllNonActiveForeignCars(foreignCars);
         System.out.println("non active cars count" + nonActiveForeignCars.size());
         List<Invoice> createdInvoices = new ArrayList<>();
 
         for (Car car : nonActiveForeignCars) {
             if (foreignCars.contains(car)) {
+                //Get the invoice from the car
                 Invoice carInvoice = europeanIntegrationService.getCarInvoice(car);
+                //Send the invoice abroad
                 sendInvoiceAbroad(carInvoice, getCountryByString(car.getTracker().getCountry()));
+                //Add the invoice to the list to return
                 createdInvoices.add(carInvoice);
+                //Remove the car from the list of foreign cars that are active in our simulation
                 foreignCars.remove(car);
-                System.out.println("car invoice made for: "+ car.getLicensePlate().getLicense());
+                System.out.println("car invoice made for: " + car.getLicensePlate().getLicense());
             }
         }
         return createdInvoices;
@@ -116,13 +126,13 @@ public class EUApplication implements TopicListener {
      * @param stolenCar that is stolen
      */
     public void notifyCountryOfDrivingStolenCar(Car stolenCar) {
-     //   new NotImplementedException(); //todo implement when the JMS is improved
+        //   new NotImplementedException(); //todo implement when the JMS is improved
     }
 
     /**
      * This gets called when a car is received from the EU to drive in The Netherlands
      *
-     * @param car
+     * @param car that is received from a foreign country
      */
     @Override
     public void handleReceivedCar(Car car) {
@@ -140,14 +150,37 @@ public class EUApplication implements TopicListener {
         }
     }
 
+    /**
+     * This gets called when an invoice is received from a foreign country.
+     * The invoice will be added to the correct owner. The received invoice has a temporarily owner with the car numberplate as name
+     *
+     * @param invoice that is received from a foreign country.
+     */
     @Override
     public void handleReceivedInvoice(Invoice invoice) {
         System.out.println("Received an invoice from: " + invoice.getCountryOfOrigin());
+        //Currently we only know the license of the car and not the owner. it is saved in the owner object though.
+        String licensePlateLicense = invoice.getOwner().getName();
+        Car car = carService.getBylicensePlateLicense(licensePlateLicense);
+
+        if (car != null) {
+            Owner realOwner = ownerService.getOwnerByCar(car);
+            if (realOwner != null) {
+                invoice.setOwner(realOwner);
+                invoiceService.saveInvoice(invoice);
+                System.out.println("Invoice saved to user: " + realOwner.getName());
+            } else {
+                System.out.println("The received car has no owner.");
+            }
+        } else {
+            System.out.println("There is no known car with licenseplatenumber: " + invoice.getOwner().getName());
+        }
+
     }
 
     @Override
     public void handleReceivedStolenCarAnnouncement(Car car) {
-        System.out.println("Received a stolen car announcement from: "+ car.getTracker().getCountry());
+        System.out.println("Received a stolen car announcement from: " + car.getTracker().getCountry());
         carService.reportCarStolen(car);
     }
 
@@ -158,15 +191,15 @@ public class EUApplication implements TopicListener {
 
     /**
      * Gets a country enum value by string.
+     *
      * @param countryName of the country
      * @return Country of string. If the string is not valid it will return Netherlands.
      */
-    private Countries getCountryByString(String countryName){
+    private Countries getCountryByString(String countryName) {
         Countries country;
-        try{
+        try {
             country = Countries.valueOf(countryName);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             country = Countries.NETHERLANDS;
         }
         return country;

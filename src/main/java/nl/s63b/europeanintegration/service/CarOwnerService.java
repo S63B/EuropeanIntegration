@@ -34,4 +34,8 @@ public class CarOwnerService {
         carOwnerDao.save(car_ownership);
         return car_ownership;
     }
+
+    public List<Car_Ownership> getAllByCar(Car car){
+        return carOwnerDao.getAllByCar(car);
+    }
 }

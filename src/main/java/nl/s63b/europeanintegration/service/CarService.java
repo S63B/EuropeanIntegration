@@ -54,9 +54,18 @@ public class CarService {
         saveCar(car);
     }
 
-
-
     public boolean licensePlateExists(String licensePlate) {
         return licensePlateDao.existsByLicense(licensePlate);
+    }
+
+    public Car getBylicensePlateLicense(String  licensePlateLicense){
+        Car foundCar = null;
+        LicensePlate licensePlate = licensePlateDao.findByLicense(licensePlateLicense);
+
+        if(licensePlate != null){
+            foundCar = carDao.findByLicensePlate(licensePlate);
+        }
+
+        return foundCar;
     }
 }

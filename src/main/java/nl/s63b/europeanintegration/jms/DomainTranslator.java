@@ -1,9 +1,6 @@
 package nl.s63b.europeanintegration.jms;
 
-import com.S63B.domain.Entities.Car;
-import com.S63B.domain.Entities.Invoice;
-import com.S63B.domain.Entities.LicensePlate;
-import com.S63B.domain.Entities.Tracker;
+import com.S63B.domain.Entities.*;
 import com.gmail.guushamm.EuropeanIntegration.StolenCar;
 import nl.s63b.europeanintegration.service.CarService;
 import org.joda.time.DateTime;
@@ -17,7 +14,6 @@ import java.util.Date;
  */
 public class DomainTranslator {
     private static DomainTranslator instance;
-    private CarService carService;
 
 
     public static DomainTranslator getInstance() {
@@ -104,9 +100,13 @@ public class DomainTranslator {
         return newCar;
     }
 
-    //todo Ophalen van de user die in het buitenland gereden heeft om zo zijn invoice te koppelen en de juiste auto te selecteren
     public static Invoice jmsToInvoice(com.gmail.guushamm.EuropeanIntegration.Invoice invoice){
         Invoice newInvoice = new Invoice();
+
+        //Creating a temporarily owner with the licenseplate as name so the owner of that car can be added and persisted at a later time
+        Owner tempOwner = new Owner();
+        tempOwner.setName(invoice.getLicensePlate());
+        newInvoice.setOwner(tempOwner);
 
         newInvoice.setTotalPrice(invoice.getPrice());
         newInvoice.setCountryOfOrigin(invoice.getOriginCountry().name());

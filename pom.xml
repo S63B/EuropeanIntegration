@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.github.S63B</groupId>
             <artifactId>Domain</artifactId>
-            <version>11fde65791</version>
+            <version>342d9a18c5</version>
         </dependency>
 
 

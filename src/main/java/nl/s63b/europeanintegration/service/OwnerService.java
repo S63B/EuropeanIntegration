@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -30,10 +31,6 @@ public class OwnerService {
 
     public List<Owner> getAllOwners() {
         return Lists.newArrayList(ownerDao.findAll());
-    }
-
-    public Owner getOwner(int ownerId) {
-        return ownerDao.findOne(ownerId);
     }
 
     public Owner addOwnership(Owner owner, Car_Ownership ownership) {
@@ -60,5 +57,10 @@ public class OwnerService {
             returnOwner = ownerDao.save(returnOwner);
         }
         return returnOwner;
+    }
+
+    public Owner getOwnerByCar(Car car){
+        Car_Ownership currentCarOwner = carOwnerService.getAllByCar(car).stream().max(Comparator.comparing(Car_Ownership::getPurchaseDate)).get();
+        return currentCarOwner.getOwner();
     }
 }
