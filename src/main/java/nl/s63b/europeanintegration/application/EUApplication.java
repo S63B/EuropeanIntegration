@@ -6,6 +6,7 @@ import com.S63B.domain.Entities.Owner;
 import nl.s63b.europeanintegration.jms.Countries;
 import nl.s63b.europeanintegration.jms.TopicGateway;
 import nl.s63b.europeanintegration.jms.TopicListener;
+import nl.s63b.europeanintegration.jms.dao.CarDao;
 import nl.s63b.europeanintegration.service.CarService;
 import nl.s63b.europeanintegration.service.EuropeanIntegrationService;
 import nl.s63b.europeanintegration.service.InvoiceService;
@@ -137,7 +138,7 @@ public class EUApplication implements TopicListener {
     @Override
     public void handleReceivedCar(Car car) {
         if (foreignCars.size() < 50) {
-            europeanIntegrationService.addReceivedDrivingCar(car);
+            car = europeanIntegrationService.addReceivedDrivingCar(car);
 
             if (car.isStolen()) {
                 notifyCountryOfDrivingStolenCar(car);

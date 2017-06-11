@@ -29,10 +29,10 @@ public class CarService {
         this.trackerDao = trackerDao;
     }
 
-    public void saveCar(Car car) {
+    public Car saveCar(Car car) {
         licensePlateDao.save(car.getLicensePlate());
         trackerDao.save(car.getTracker());
-        carDao.save(car);
+        return carDao.save(car);
     }
 
     public boolean carIsStolen(Car car) {
@@ -67,5 +67,20 @@ public class CarService {
         }
 
         return foundCar;
+    }
+
+    public Car getOrSave(Car car) {
+        Car returncar;
+
+        LicensePlate plate = licensePlateDao.findByLicense(car.getLicensePlate().getLicense());
+
+        if(plate != null){
+            returncar = carDao.findByLicensePlate(plate);
+        }
+        else {
+            returncar = saveCar(car);
+        }
+
+        return returncar;
     }
 }

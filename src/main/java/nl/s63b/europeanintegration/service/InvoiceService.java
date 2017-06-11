@@ -5,7 +5,6 @@ import com.S63B.domain.Entities.Car_Ownership;
 import com.S63B.domain.Entities.Invoice;
 import com.S63B.domain.Entities.Owner;
 import nl.s63b.europeanintegration.jms.dao.InvoiceDao;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,10 +35,11 @@ public class InvoiceService {
      * @return
      */
     public Invoice getInvoiceForeignCar(Car car) {
-        Owner carOwner = ownerService.getOrCreateOwnerByUsername(car.getLicensePlate().getLicense());
+        Owner carOwner = ownerService.getOrCreateOwnerByCar(car);
         Car_Ownership ownership = carOwnerService.addCarToOwner(car, carOwner);
         ownerService.addOwnership(carOwner, ownership);
 
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         Invoice tempinvoice = new Invoice();
         tempinvoice.setId(invoicecount);
         tempinvoice.setOwner(carOwner);
@@ -47,6 +47,7 @@ public class InvoiceService {
 
         tempinvoice.setCountryOfOrigin(car.getTracker().getCountry());
         invoicecount++;
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         return tempinvoice;
     }
 

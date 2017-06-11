@@ -31,8 +31,7 @@ public class CarOwnerService {
 
     public Car_Ownership addCarToOwner(Car car, Owner owner) {
         Car_Ownership car_ownership = new Car_Ownership(car, owner, DateTime.now());
-        carOwnerDao.save(car_ownership);
-        return car_ownership;
+        return carOwnerDao.save(car_ownership);
     }
 
     public List<Car_Ownership> getAllByCar(Car car){

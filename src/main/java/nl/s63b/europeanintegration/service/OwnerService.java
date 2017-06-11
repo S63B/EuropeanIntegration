@@ -49,18 +49,22 @@ public class OwnerService {
         return returnOwner;
     }
 
-    public Owner getOrCreateOwnerByUsername(String username) {
-        Owner returnOwner = ownerDao.findByUsername(username);
-        if (returnOwner == null) {
-            returnOwner = new Owner();
-            returnOwner.setUsername(username);
-            returnOwner = ownerDao.save(returnOwner);
+    public Owner getOrCreateOwnerByCar(Car car) {
+        Owner carOwner = getOwnerByCar(car);
+        if (carOwner == null) {
+            carOwner = new Owner();
+            carOwner.setUsername(car.getLicensePlate().getLicense());
+            carOwner = ownerDao.save(carOwner);
         }
-        return returnOwner;
+        return carOwner;
     }
 
     public Owner getOwnerByCar(Car car){
-        Car_Ownership currentCarOwner = carOwnerService.getAllByCar(car).stream().max(Comparator.comparing(Car_Ownership::getPurchaseDate)).get();
-        return currentCarOwner.getOwner();
+        List<Car_Ownership> ownerships = carOwnerService.getAllByCar(car);
+        Owner currentCarOwner = null;
+        if(ownerships != null){
+            currentCarOwner = ownerships.stream().max(Comparator.comparing(Car_Ownership::getPurchaseDate)).get().getOwner();
+        }
+        return currentCarOwner;
     }
 }

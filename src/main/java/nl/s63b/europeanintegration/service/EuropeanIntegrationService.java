@@ -32,11 +32,10 @@ public class EuropeanIntegrationService {
      *
      * @param car that will drive in your country
      */
-    public void addReceivedDrivingCar(Car car) {
-        if(!carService.licensePlateExists(car.getLicensePlate().getLicense())){
-            carService.saveCar(car);
-        }
+    public Car addReceivedDrivingCar(Car car) {
+        car = carService.getOrSave(car);
         simulationService.addCarToSimulation(car);
+        return car;
     }
 
     public Invoice getCarInvoice(Car foreignCar) {
