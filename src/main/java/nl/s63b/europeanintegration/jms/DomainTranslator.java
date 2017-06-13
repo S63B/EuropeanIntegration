@@ -13,16 +13,6 @@ import java.util.Date;
  * Created by Kevin.
  */
 public class DomainTranslator {
-    private static DomainTranslator instance;
-
-
-    public static DomainTranslator getInstance() {
-        if (instance == null) {
-            instance = new DomainTranslator();
-        }
-        return instance;
-    }
-
     public static Car jmsToCar(com.gmail.guushamm.EuropeanIntegration.Car car) {
         Car newCar = new Car();
 

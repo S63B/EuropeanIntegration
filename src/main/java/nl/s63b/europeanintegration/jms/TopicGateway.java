@@ -19,7 +19,6 @@ public class TopicGateway {
 
     private TopicGateway() {
         listeners = new ArrayList<>();
-        DomainTranslator.getInstance();
         gson = new Gson();
 
         connector = new Connector();

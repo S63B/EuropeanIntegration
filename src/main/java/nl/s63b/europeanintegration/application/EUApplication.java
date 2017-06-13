@@ -46,7 +46,6 @@ public class EUApplication implements TopicListener {
         TopicGateway.getInstance();
         TopicGateway.addListener(this);
         foreignCars = new ArrayList<>();
-        System.out.println("bliep bloep");
     }
 
 
