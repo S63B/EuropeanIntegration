@@ -14,6 +14,8 @@ import nl.s63b.europeanintegration.service.OwnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.ws.rs.POST;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,11 +41,14 @@ public class EUApplication implements TopicListener {
     /**
      * Used to initiate the JMS component
      */
+    @PostConstruct
     public void initiate() {
         TopicGateway.getInstance();
         TopicGateway.addListener(this);
         foreignCars = new ArrayList<>();
+        System.out.println("bliep bloep");
     }
+
 
     /**
      * Sends a car abroad to a different country

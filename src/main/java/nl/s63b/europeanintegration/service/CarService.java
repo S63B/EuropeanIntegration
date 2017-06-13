@@ -37,7 +37,7 @@ public class CarService {
 
     public boolean carIsStolen(Car car) {
         boolean isStolen = false;
-        LicensePlate plate = licensePlateDao.findByLicense(car.getLicensePlate().getLicense());
+        LicensePlate plate = licensePlateDao.findFirstByLicense(car.getLicensePlate().getLicense());
         if (plate != null) {
             Car foundCar = carDao.findByLicensePlate(plate);
             isStolen = foundCar.isStolen();
@@ -60,7 +60,7 @@ public class CarService {
 
     public Car getBylicensePlateLicense(String  licensePlateLicense){
         Car foundCar = null;
-        LicensePlate licensePlate = licensePlateDao.findByLicense(licensePlateLicense);
+        LicensePlate licensePlate = licensePlateDao.findFirstByLicense(licensePlateLicense);
 
         if(licensePlate != null){
             foundCar = carDao.findByLicensePlate(licensePlate);
@@ -72,7 +72,7 @@ public class CarService {
     public Car getOrSave(Car car) {
         Car returncar;
 
-        LicensePlate plate = licensePlateDao.findByLicense(car.getLicensePlate().getLicense());
+        LicensePlate plate = licensePlateDao.findFirstByLicense(car.getLicensePlate().getLicense());
 
         if(plate != null){
             returncar = carDao.findByLicensePlate(plate);

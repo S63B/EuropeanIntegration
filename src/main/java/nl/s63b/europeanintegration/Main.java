@@ -30,16 +30,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableSwagger2
 public class Main {
-    private static EUApplication application;
-
-    @Autowired
-    public Main(EUApplication application){
-        this.application = application;
-    }
 
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
-        application.initiate();
         System.out.println("SpringBoot started");
     }
 
